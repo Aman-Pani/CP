@@ -1,181 +1,296 @@
+// / inserting in the ith position
 #include<stdio.h>
-#include<stdlib.h>
 #include<malloc.h>
-struct NODE
+
+struct Node
 {
     int info;
-    struct NODE *next;
+    struct Node *prev,*next;
 };
-typedef struct NODE node;
-node* insertatbegin(node*);
+typedef struct Node node;
+node* create(node*);
 void traverse(node*);
-void insertatend(node*);
-void searchele(node*, int);
-void insert_at_ith(node*, int);
+node* insert_at_ith(node*,int);
 int main()
 {
-    node *start, *temp;
-    //allocate memory for nodes in the single linked list in heap
-    int opt,i,val,ele;
-    while(1)
-    {
-        printf("CHOOSE MENU \n 1.create a linked list \n 2. traversal \n 3. insert an element at begin \n 4. insert an element at end \n 5. insert an element after ith node of list \n 6. insert a new node after a particular value of list \n 7. search an element from a list \n 8. exit \n");
-        scanf("%d",&opt);
-        switch(opt)
-        {
-        case 1:
-            start = (node*)malloc(sizeof(node));
-            printf("input to the 1st node :");
-            scanf("%d",&(start->info));
-            start->next=NULL;
-            temp=start;
-            char ch='y';
-            while(ch=='y')
-            {
-                temp->next=(node*)malloc(sizeof(node));
-                temp=temp->next;
-                printf("\n input node :");
-                scanf("%d",&(temp->info));
-                printf("enter y to continue or else n to stop :");
-                scanf(" %c",&ch);
-            }
-            temp->next=NULL;
-            break;
-        case 2:
-            printf("the list is :\n");
-            traverse(start);
-            break;
-        case 3:
-            start=insertatbegin(start);
-            break;
-        case 4:
-            insertatend(start);
-            break;
-        case 5:
-            printf("enter the location :");
-            scanf("%d",&i);
-            insert_at_ith(start,i);
-            break;
-        case 6:
-            printf("enter the value after which you wanna insert the element :");
-            scanf("%d",&val);
-            insertaftervalue(start,val);
-            break;
-        case 7:
-            printf("enter the element you wanna search :");
-            scanf("%d",&ele);
-            searchele(start,ele);
-            break;
-        case 8:
-            exit(1);
-            break;
-        default :
-            printf("invalid option\n");
-        }
-    }
+    int i;
+    node *start=NULL;
+    start=create(start);
+    traverse(start);
+    printf("\n enter i:");
+    scanf("%d",&i);
+    start = insert_at_ith(start,i);
+    traverse(start);
     return 0;
 }
-void traverse(node *s)
+node* create(node*s)
 {
-    node *temp;
-    temp=s;
-    while(temp!=NULL)
+    node *pre,*temp;
+    if(s==NULL)
     {
-        printf("%d\t", temp->info);
-        temp=temp->next;
+        s=(node*)malloc(sizeof(node));
+        printf("input info to 1st node:");
+        scanf("%d",&(s->info));
+        s->prev=NULL;
+        s->next=NULL;
     }
-    printf("\n");
-}
+    temp=s;
+    char ch='y';
+    while(ch=='y')
+    {
+        temp->next=(node*)malloc(sizeof(node));
+        pre=temp;
+        temp=temp->next;
+        printf("\n enter new node:");
+        scanf("%d",&(temp->info));
+        temp->prev=pre;
+        printf("\n input 'y' to proceed and 'n' to stop:");
+        scanf(" %c",&ch);
 
-node* insertatbegin(node *s)
-{
-    node *new;
-    new=(node*)malloc(sizeof(node));
-    printf("\n input node that will be added to 1st :");
-    scanf("%d",&(new->info));
-    new->next=s;
-    s=new;
+    }
+    temp->next=NULL;
     return s;
 }
-
-void insertatend(node *s)
+void traverse(node*s)
 {
-    node *new;
-    new=(node*)malloc(sizeof(node));
-    printf("\n input node that will be added to last :");
-    scanf("%d",&(new->info));
-    new->next=NULL;
-    while(s->next!=NULL)
-    {
-        s=s->next;
-    }
-    s->next=new;
-}
-
-void searchele(node *s, int ele)
-{
-    node *ptr;
-    ptr=s;
-    while(ptr!=NULL)
-    {
-        if(ptr->info==ele)
-        {
-            printf("element is found\n");
-            break;
-        }
-        else
-        {
-            ptr=ptr->next;
-        }
-    }
-}
-
-void insertaftervalue(node *s, int val)
-{
-    node *temp, *new;
+    node*temp,*ptr;
     temp=s;
+
+    printf("\n forward traversal:");
     while(temp!=NULL)
     {
-        if(temp->info==val)
-        {
-            break;
-        }
-        else
-        {
-            temp=temp->next;
-        }
+        ptr=temp;
+        printf("%d\t",temp->info);
+        temp=temp->next;
     }
-    new=(node*)malloc(sizeof(node));
-    printf("input the element :");
-    scanf("%d",&(new->info));
-    if(temp!=NULL)
+    printf("\n backward traversal:");
+    while(ptr!=NULL)
     {
-        new->next=temp->next;
-        temp->next=new;
+
+        printf("%d\t",ptr->info);
+        ptr=ptr->prev;
+    }
+
+}
+node* insert_at_ith(node*s,int i)
+{
+    node *temp,*temp1,*new;
+    new=(node*)malloc(sizeof(node));
+    printf("\n input data to the new node: ");
+    scanf("%d",&(new->info));
+    if(i==0)
+    {
+        temp=s;
+        s=new;
+        s->next=temp;
+        s->next->prev=s;
+        s->prev=NULL;
     }
     else
     {
-        printf("the node ain't present\n");
+        int k=1;
+        temp=s;
+        while(k<i)
+        {
+            temp=temp->next;
+            k++;
+        }
+            temp1=temp->next;
+            temp->next=new;
+            new->prev=temp;
+            new->next=temp1;
+            temp1->prev=new;
+
     }
+    return s;
 }
 
-void insert_at_ith(node* s, int i)
-{
-    node *ptr, *new;
-    int k;
-    k=0;
-    ptr=s;
-    while(k<i-1)
-    {
-        ptr=ptr->next;
-        k++;
-    }
-    new=(node*)malloc(sizeof(node));
-    printf("input new node which will be inserted after ith position :");
-    scanf("%d",&(new->info));
-    new->next=ptr->next;
-    ptr->next=new;
-}
+
+
+
+
+
+
+
+
+// #include<stdio.h>
+// #include<stdlib.h>
+// #include<malloc.h>
+// struct NODE
+// b{
+//     int info;
+//     struct NODE *next;
+// };
+// typedef struct NODE node;
+// node* insertatbegin(node*);
+// void traverse(node*);
+// void insertatend(node*);
+// void searchele(node*, int);
+// void insert_at_ith(node*, int);
+// int main()
+// {
+//     node *start, *temp;
+//     //allocate memory for nodes in the single linked list in heap
+//     int opt,i,val,ele;
+//     while(1)
+//     {
+//         printf("CHOOSE MENU \n 1.create a linked list \n 2. traversal \n 3. insert an element at begin \n 4. insert an element at end \n 5. insert an element after ith node of list \n 6. insert a new node after a particular value of list \n 7. search an element from a list \n 8. exit \n");
+//         scanf("%d",&opt);
+//         switch(opt)
+//         {
+//         case 1:
+//             start = (node*)malloc(sizeof(node));
+//             printf("input to the 1st node :");
+//             scanf("%d",&(start->info));
+//             start->next=NULL;
+//             temp=start;
+//             char ch='y';
+//             while(ch=='y')
+//             {
+//                 temp->next=(node*)malloc(sizeof(node));
+//                 temp=temp->next;
+//                 printf("\n input node :");
+//                 scanf("%d",&(temp->info));
+//                 printf("enter y to continue or else n to stop :");
+//                 scanf(" %c",&ch);
+//             }
+//             temp->next=NULL;
+//             break;
+//         case 2:
+//             printf("the list is :\n");
+//             traverse(start);
+//             break;
+//         case 3:
+//             start=insertatbegin(start);
+//             break;
+//         case 4:
+//             insertatend(start);
+//             break;
+//         case 5:
+//             printf("enter the location :");
+//             scanf("%d",&i);
+//             insert_at_ith(start,i);
+//             break;
+//         case 6:
+//             printf("enter the value after which you wanna insert the element :");
+//             scanf("%d",&val);
+//             insertaftervalue(start,val);
+//             break;
+//         case 7:
+//             printf("enter the element you wanna search :");
+//             scanf("%d",&ele);
+//             searchele(start,ele);
+//             break;
+//         case 8:
+//             exit(1);
+//             break;
+//         default :
+//             printf("invalid option\n");
+//         }
+//     }
+//     return 0;
+// }
+// void traverse(node *s)
+// {
+//     node *temp;
+//     temp=s;
+//     while(temp!=NULL)
+//     {
+//         printf("%d\t", temp->info);
+//         temp=temp->next;
+//     }
+//     printf("\n");
+// }
+
+// node* insertatbegin(node *s)
+// {
+//     node *new;
+//     new=(node*)malloc(sizeof(node));
+//     printf("\n input node that will be added to 1st :");
+//     scanf("%d",&(new->info));
+//     new->next=s;
+//     s=new;
+//     return s;
+// }
+
+// void insertatend(node *s)
+// {
+//     node *new;
+//     new=(node*)malloc(sizeof(node));
+//     printf("\n input node that will be added to last :");
+//     scanf("%d",&(new->info));
+//     new->next=NULL;
+//     while(s->next!=NULL)
+//     {
+//         s=s->next;
+//     }
+//     s->next=new;
+// }
+
+// void searchele(node *s, int ele)
+// {
+//     node *ptr;
+//     ptr=s;
+//     while(ptr!=NULL)
+//     {
+//         if(ptr->info==ele)
+//         {
+//             printf("element is found\n");
+//             break;
+//         }
+//         else
+//         {
+//             ptr=ptr->next;
+//         }
+//     }
+// }
+
+// void insertaftervalue(node *s, int val)
+// {
+//     node *temp, *new;
+//     temp=s;
+//     while(temp!=NULL)
+//     {
+//         if(temp->info==val)
+//         {
+//             break;
+//         }
+//         else
+//         {
+//             temp=temp->next;
+//         }
+//     }
+//     new=(node*)malloc(sizeof(node));
+//     printf("input the element :");
+//     scanf("%d",&(new->info));
+//     if(temp!=NULL)
+//     {
+//         new->next=temp->next;
+//         temp->next=new;
+//     }
+//     else
+//     {
+//         printf("the node ain't present\n");
+//     }
+// }
+
+// void insert_at_ith(node* s, int i)
+// {
+//     node *ptr, *new;
+//     int k;
+//     k=0;
+//     ptr=s;
+//     while(k<i-1)
+//     {
+//         ptr=ptr->next;
+//         k++;
+//     }
+//     new=(node*)malloc(sizeof(node));
+//     printf("input new node which will be inserted after ith position :");
+//     scanf("%d",&(new->info));
+//     new->next=ptr->next;
+//     ptr->next=new;
+// }
 
 
 
